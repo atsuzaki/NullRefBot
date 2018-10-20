@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -95,7 +94,14 @@ namespace NullRefBot
 
 		private Task Client_MessageCreated(MessageCreateEventArgs e)
 		{
-			//e.Client.DebugLogger.LogMessage(LogLevel.Info, "NRB", $"[MSG] {e.Author.Username}: {e.Message.Content}", DateTime.Now);
+			if( e.Author.IsBot ) return Task.CompletedTask; // explicitly ignore bot messages
+
+			var isKarmaMessage = Karma.IsKarmaMessage( e.Message );
+
+			var gaveKarma = false;
+			if( isKarmaMessage ) {
+				gaveKarma = Karma.GiveKarma( e.Channel, e.Author, e.MentionedUsers );
+			}
 
 			return Task.CompletedTask;
 		}
