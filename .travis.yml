@@ -1,0 +1,26 @@
+language: csharp
+mono: none
+dotnet: 2.0.0
+deploy:
+- provider: s3
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  local_dir: dpl_cd_upload
+  skip_cleanup: true
+  on: &2
+    repo: mckenon/NullRefBot
+  bucket: nullrefbot-travis
+  region: us-east-2
+- provider: codedeploy
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  bucket: nullrefbot-travis
+  key: latest.zip
+  bundle_type: zip
+  application: nullrefbot
+  deployment_group: depGroupName
+  region: us-east-2
+  on: *2
+script:
+  - dotnet restore
+  - dotnet build ./NullRefBot
