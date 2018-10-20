@@ -85,8 +85,10 @@ namespace NullRefBot
 
 		private Task Client_GuildMemberAdded(GuildMemberAddEventArgs e)
 		{
+		    const ulong WELCOME_CHANNEL_ID = 503022367442862094; //TODO: temp
+
 			e.Client.DebugLogger.LogMessage(LogLevel.Info, "NRB", $"{e.Member.Username} joined", DateTime.Now);
-		    e.Client.SendMessageAsync(e.Guild.GetChannel(270473578892230657), $"A wild {e.Member.Mention} has appeared!"); //TODO: place channel id to const
+		    e.Client.SendMessageAsync(e.Guild.GetChannel(WELCOME_CHANNEL_ID), $"A wild {e.Member.Mention} has appeared!");
 
             return Task.CompletedTask;
 		}
