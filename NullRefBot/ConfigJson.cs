@@ -17,5 +17,11 @@ namespace NullRefBot
 
 		[JsonProperty("database_port")]
 		public int DatabasePort { get; private set; }
+
+		[JsonProperty("debug_mode")]
+		public bool DebugMode { get; private set; }
+
+		[JsonProperty("debug_channels")]
+		public ulong[] DebugChannels { get; private set; }
 	}
 }

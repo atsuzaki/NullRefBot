@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using NullRefBot.Utils;
 using RestSharp;
 
 namespace NullRefBot.Commands
@@ -38,6 +40,20 @@ namespace NullRefBot.Commands
 			IRestResponse response = client.Execute(req);
 
 			await ctx.RespondAsync($"```\n==RESPONSE==\n{response.Content}\n============```");
+		}
+
+		[Command("logdebugchannels")]
+		public async Task LogDebugChannels(CommandContext ctx)
+		{
+			if (!ctx.IsAllowedInChannel())
+				return;
+
+			await ctx.TriggerTypingAsync();
+
+			string s = "In Debug Channel? " + (Bot.Instance.Config.DebugChannels.Contains(ctx.Channel.Id)) + "\n";
+			foreach (ulong chan in Bot.Instance.Config.DebugChannels)
+				s += chan + "\n";
+			await ctx.RespondAsync(s);
 		}
 	}
 }
