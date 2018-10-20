@@ -12,9 +12,6 @@ namespace NullRefBot.Commands
 		[Command("lmgtfy")]
 		public async Task Lmgtfy(CommandContext ctx, [RemainingText]string thingToGoogle)
 		{
-			if (ctx.Channel.Id != 502928327766704130 && ctx.Channel.Id != 502646757759385602)
-				return;
-
 			await ctx.TriggerTypingAsync();
 
 			var embed = new DiscordEmbedBuilder

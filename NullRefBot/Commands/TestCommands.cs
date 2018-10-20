@@ -23,7 +23,7 @@ namespace NullRefBot.Commands
 			await ctx.RespondAsync($"{emoji} Pong! Ping: {ctx.Client.Ping}ms");
 		}
 
-		[Command("tryget")]
+		[Command("tryadduser")]
 		public async Task CreateUser(CommandContext ctx)
 		{
 			if (ctx.Channel.Id != 502928327766704130 && ctx.Channel.Id != 502646757759385602)
@@ -33,11 +33,11 @@ namespace NullRefBot.Commands
 
 			RestClient client = new RestClient($"http://{Bot.Instance.Config.DatabaseIP}:{Bot.Instance.Config.DatabasePort}");
 
-			RestRequest req = new RestRequest(Method.GET);
+			RestRequest req = new RestRequest("/users/fuckYouApheAndYourConfusingAssSchemas", Method.PUT, DataFormat.Json);
 
 			IRestResponse response = client.Execute(req);
 
-			await ctx.RespondAsync($"==RESPONSE==\n{response.Content}");
+			await ctx.RespondAsync($"```\n==RESPONSE==\n{response.Content}\n============```");
 		}
 	}
 }
