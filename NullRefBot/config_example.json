@@ -1,0 +1,6 @@
+{
+	"token": "<BOT TOKEN>",
+	"prefix": "!",
+	"database_ip": "<DB IP>",
+	"database_port": 0
+}
