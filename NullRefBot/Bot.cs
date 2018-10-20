@@ -20,6 +20,7 @@ namespace NullRefBot
 		public CommandsNextExtension Commands;
 		public ConfigJson Config;
 
+		public static DebugLogger Logger => Instance.Client.DebugLogger;
 		public static Bot Instance => instance ?? (instance = new Bot());
 		private static Bot instance;
 
@@ -96,11 +97,11 @@ namespace NullRefBot
 		{
 			if( e.Author.IsBot ) return Task.CompletedTask; // explicitly ignore bot messages
 
-			var isKarmaMessage = Karma.IsKarmaMessage( e.Message );
+			var isKarmaMessage = ExperienceManager.IsExpMessage( e.Message );
 
 			var gaveKarma = false;
 			if( isKarmaMessage ) {
-				gaveKarma = Karma.GiveKarma( e.Channel, e.Author, e.MentionedUsers );
+				gaveKarma = ExperienceManager.GiveExp( e.Channel, e.Author, e.MentionedUsers );
 			}
 
 			return Task.CompletedTask;
