@@ -46,8 +46,9 @@ namespace NullRefBot
 			Client.GuildAvailable += Client_GuildAvailable;
 			Client.ClientErrored += Client_ClientError;
 			Client.MessageCreated += Client_MessageCreated;
+		    Client.GuildMemberAdded+= Client_GuildMemberAdded;
 
-			var ccfg = new CommandsNextConfiguration()
+            var ccfg = new CommandsNextConfiguration()
 			{
 				StringPrefixes = new[] {Config.CommandPrefix},
 				EnableDms = true,
@@ -80,6 +81,14 @@ namespace NullRefBot
 			// a completed task, so that no additional work
 			// is done
 			return Task.CompletedTask;
+		}
+
+		private Task Client_GuildMemberAdded(GuildMemberAddEventArgs e)
+		{
+			e.Client.DebugLogger.LogMessage(LogLevel.Info, "NRB", $"{e.Member.Username} joined", DateTime.Now);
+		    e.Client.SendMessageAsync(e.Guild.GetChannel(270473578892230657), $"A wild {e.Member.Mention} has appeared!"); //TODO: place channel id to const
+
+            return Task.CompletedTask;
 		}
 
 		private Task Client_MessageCreated(MessageCreateEventArgs e)
