@@ -13,9 +13,6 @@ namespace NullRefBot.Commands
 		[Command("ping")]
 		public async Task Ping(CommandContext ctx)
 		{
-			if (ctx.Channel.Id != 502928327766704130 && ctx.Channel.Id != 502646757759385602)
-				return;
-
 			await ctx.TriggerTypingAsync();
 
 			var emoji = DiscordEmoji.FromName(ctx.Client, ":ping_pong:");
@@ -26,9 +23,6 @@ namespace NullRefBot.Commands
 		[Command("tryget")]
 		public async Task CreateUser(CommandContext ctx)
 		{
-			if (ctx.Channel.Id != 502928327766704130 && ctx.Channel.Id != 502646757759385602)
-				return;
-
 			await ctx.TriggerTypingAsync();
 
 			RestClient client = new RestClient($"http://{Bot.Instance.Config.DatabaseIP}:{Bot.Instance.Config.DatabasePort}");
