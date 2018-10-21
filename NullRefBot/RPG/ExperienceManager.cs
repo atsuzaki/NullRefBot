@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using RestSharp;
+using NullRefBot.Utils;
 
-namespace NullRefBot {
+namespace NullRefBot.RPG {
 	public class ExperienceManager {
 		static readonly Regex detectThanksRegex = new Regex( @"(?:\s|^)(thanks|thank you)(?:\s|$)", RegexOptions.IgnoreCase );
 		static readonly StringBuilder messageBuilder = new StringBuilder();
@@ -31,36 +32,46 @@ namespace NullRefBot {
 			if( response.ErrorException != null ) {
 				const string message = "Error retrieving response.  Check inner details for more info.";
 				var twilioException = new ApplicationException( message, response.ErrorException );
-				Console.Write( twilioException.ToString() );
+				throw twilioException;
 			}
 
 			return response.Data;
 		}
 
-		static void PostExp ( DiscordUser dUser, int amount ) {
+		static Task<User> PostExpAsync ( DiscordUser dUser, int amount ) {
 			var req = new RestRequest();
-			req.Resource = "/users/{discord_id}/karma/{amount}";
-			req.AddParameter( "discord_id", dUser.Id );
-			req.AddParameter( "amount", amount );
-			req.Method = Method.PUT;
+			req.Resource = "/users/{discord_id}/addexperience";
 			req.RequestFormat = DataFormat.Json;
+			req.Method = Method.PATCH;
+			req.Timeout = 5 * 1000;
+			
+			req.AddParameter( "discord_id", dUser.Id, ParameterType.UrlSegment );
 
-			Task.Run( async () => {
-				await CreateUser( dUser ); // temp
+			req.AddBody( new { experience = amount } );
 
+			Console.WriteLine( req.ToString() );
+
+			return Task.Run( async () => {
 				var user = await ExecuteAsync<User>( req );
 
-				Console.WriteLine( user.Id );
-				Console.WriteLine( user.Experience );
+				if( user == null ) {
+					throw new Exception( "User is null" );
+				}
+
+				user.dUser = dUser;
+
+				return user;
 			} );
 		}
 
-		static Task CreateUser ( DiscordUser dUser ) {
+		static Task<User> GetUserAsync ( DiscordUser dUser ) {
 			var req = new RestRequest();
 			req.Resource = "/users/{discord_id}";
-			req.AddParameter( "discord_id", dUser.Id );
-			req.Method = Method.PUT;
+			req.AddParameter( "discord_id", dUser.Id, ParameterType.UrlSegment );
+
+			req.Method = Method.GET;
 			req.RequestFormat = DataFormat.Json;
+			req.Timeout = 5 * 1000;
 
 			return Task.Run( () => ExecuteAsync<User>( req ) );
 		}
@@ -70,9 +81,21 @@ namespace NullRefBot {
 			return detectThanksRegex.IsMatch( message.Content );
 		}
 
+		static readonly DiscordUser[] singleUserArr = new DiscordUser[ 1 ];
+
+		public static Task<int> GetExpAsync ( DiscordUser dUser ) {
+			return Task.Run( async () => {
+				var user = await GetUserAsync( dUser );
+
+				return user.Experience;
+			} );
+		}
+
 		public static bool GiveExp ( DiscordChannel channel, DiscordUser author, IEnumerable<DiscordUser> recipients, int amount = 1 ) {
 			var invalidUsers = new List<InvalidExpReciever>();
 			var validUsers = new List<DiscordUser>();
+
+			Console.WriteLine( author is DiscordUser );
 
 			messageBuilder.Length = 0;
 
@@ -91,16 +114,36 @@ namespace NullRefBot {
 
 			Bot.Logger.LogMessage( LogLevel.Info, "Karma", $"{author} tries giving experience to {messageBuilder.ToString()}", DateTime.Now );
 
-			foreach( var user in validUsers ) {
-				PostExp( user, amount );
-			}
+			TaskUtils.Run( async () => {
+				var success = true;
+				User[] retrievedUsers = null;
+				if( validUsers.Count > 0 ) {
+					var tasks = new Task<User>[ validUsers.Count ];
+					for( var i = 0; i < tasks.Length; i++ ) {
+						tasks[ i ] = PostExpAsync( validUsers[ i ], amount );
+					}
 
-			SendExpMessagesAsync( channel, author, validUsers, invalidUsers );
+					try {
+						retrievedUsers = await Task.WhenAll( tasks );
+					} catch( Exception e ) {
+						Console.WriteLine( e.ToString() );
+						success = false;
+					}
+				}
+
+				if( success ) {
+					await SendExpMessagesAsync( channel, author, retrievedUsers, invalidUsers );
+				} else {
+					await channel.SendMessageAsync( "Failed to give experience due to an internal server error. Please try again later." );
+				}
+			} );
 
 			return validUsers.Count > 0;
 		}
 
-		public static Task SendExpMessagesAsync ( DiscordChannel channel, DiscordUser author, IList<DiscordUser> experienceRecievers, IList<InvalidExpReciever> invalidUsers ) {
+
+
+		public static Task SendExpMessagesAsync ( DiscordChannel channel, DiscordUser author, IList<User> experienceRecievers, IList<InvalidExpReciever> invalidUsers ) {
 			return Task.Run( async () => {
 				await channel.TriggerTypingAsync();
 
@@ -109,7 +152,22 @@ namespace NullRefBot {
 			} );
 		}
 
-		public static Task SendGaveExpMessageAsync ( DiscordChannel channel, DiscordUser author, IList<DiscordUser> experienceRecievers ) {
+		public static Task SendGetExpMessageAsync ( DiscordChannel channel, IList<User> users ) {
+			if( users.Count == 0 ) return Task.CompletedTask;
+
+			return Task.Run( async () => {
+				messageBuilder.Length = 0;
+				foreach( var user in users ) {
+					messageBuilder.AppendFormat( "  **{0}**\n", user.Experience );
+				}
+
+				Bot.Logger.LogMessage( LogLevel.Info, "Karma", messageBuilder.ToString(), DateTime.Now );
+
+				await channel.SendMessageAsync( messageBuilder.ToString() );
+			} );
+		}
+
+		public static Task SendGaveExpMessageAsync ( DiscordChannel channel, DiscordUser author, IList<User> experienceRecievers ) {
 			if( experienceRecievers.Count == 0 ) return Task.CompletedTask;
 
 			return Task.Run( async () => {
@@ -117,7 +175,7 @@ namespace NullRefBot {
 				messageBuilder.AppendFormat( "{0} gave experience to:\n", author.Username );
 
 				foreach( var user in experienceRecievers ) {
-					messageBuilder.AppendFormat( "  **{0}**\n", user.Username );
+					messageBuilder.AppendFormat( "  **{0}**, {1}\n", user.dUser.Username, user.Experience );
 				}
 
 				Bot.Logger.LogMessage( LogLevel.Info, "Karma", messageBuilder.ToString(), DateTime.Now );

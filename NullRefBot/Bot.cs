@@ -11,6 +11,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
 using NullRefBot.Commands;
+using NullRefBot.RPG;
 
 namespace NullRefBot
 {
