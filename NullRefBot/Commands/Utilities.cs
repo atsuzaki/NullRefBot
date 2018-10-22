@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -28,6 +29,19 @@ namespace NullRefBot.Commands
 			};
 
 			await ctx.RespondAsync(embed: embed);
+		}
+
+		[Command("testlogroles"), RequirePermissions(Permissions.Administrator)]
+		public async Task TestLogRoles(CommandContext ctx)
+		{
+			await ctx.TriggerTypingAsync();
+
+			string s = "```\n";
+			foreach (DiscordRole role in ctx.Guild.Roles)
+				s += role.Name + "\t" + role.Id + "\n";
+			s += "```";
+
+			await ctx.RespondAsync(s);
 		}
 	}
 }

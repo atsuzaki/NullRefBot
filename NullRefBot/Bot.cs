@@ -20,6 +20,7 @@ namespace NullRefBot
 		public DiscordClient Client;
 		public CommandsNextExtension Commands;
 		public ConfigJson Config;
+		public ConfigRolesJson RolesConfig;
 
 		public static DebugLogger Logger => Instance.Client.DebugLogger;
 		public static Bot Instance => instance ?? (instance = new Bot());
@@ -33,6 +34,13 @@ namespace NullRefBot
 				jsonString = await sr.ReadToEndAsync();
 
 			Config = JsonConvert.DeserializeObject<ConfigJson>(jsonString);
+
+			using (var fs = File.OpenRead("roles.json"))
+			using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+				jsonString = await sr.ReadToEndAsync();
+			RolesConfig = JsonConvert.DeserializeObject<ConfigRolesJson>(jsonString);
+
+
 			var discordConfig = new DiscordConfiguration
 			{
 				Token = Config.Token,

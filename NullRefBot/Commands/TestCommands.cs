@@ -21,33 +21,5 @@ namespace NullRefBot.Commands
 
 			await ctx.RespondAsync($"{emoji} Pong! Ping: {ctx.Client.Ping}ms");
 		}
-
-		[Command("tryadduser")]
-		public async Task CreateUser(CommandContext ctx)
-		{
-			await ctx.TriggerTypingAsync();
-
-			RestClient client = new RestClient($"http://{Bot.Instance.Config.DatabaseIP}:{Bot.Instance.Config.DatabasePort}");
-
-			RestRequest req = new RestRequest("/users/fuckYouApheAndYourConfusingAssSchemas", Method.PUT, DataFormat.Json);
-
-			IRestResponse response = client.Execute(req);
-
-			await ctx.RespondAsync($"```\n==RESPONSE==\n{response.Content}\n============```");
-		}
-
-		[Command("logdebugchannels")]
-		public async Task LogDebugChannels(CommandContext ctx)
-		{
-			if (!ctx.IsAllowedInChannel())
-				return;
-
-			await ctx.TriggerTypingAsync();
-
-			string s = "In Debug Channel? " + (Bot.Instance.Config.DebugChannels.Contains(ctx.Channel.Id)) + "\n";
-			foreach (ulong chan in Bot.Instance.Config.DebugChannels)
-				s += chan + "\n";
-			await ctx.RespondAsync(s);
-		}
 	}
 }

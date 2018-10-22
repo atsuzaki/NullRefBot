@@ -1,0 +1,10 @@
+{
+	"roles" :
+	[
+		{
+			"name": "TestRole",
+			"id": 503519602639241226,
+			"prereq_roles": []
+		}
+	]
+}

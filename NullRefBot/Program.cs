@@ -10,7 +10,6 @@ namespace NullRefBot
 		{
 			Bot.Instance.RunAsync().Wait();
 			Console.ReadLine();
-
 		}
 	}
 }
