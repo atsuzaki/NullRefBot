@@ -21,5 +21,28 @@ namespace NullRefBot.Commands
 
 			await ctx.RespondAsync($"{emoji} Pong! Ping: {ctx.Client.Ping}ms");
 		}
-	}
+
+    [Command("popcorn")]
+    public async Task Popcorn(CommandContext ctx) {
+
+      await ctx.TriggerTypingAsync();
+
+      DiscordEmbedBuilder embed;
+      embed = new DiscordEmbedBuilder();
+      embed.ImageUrl = "https://media1.tenor.com/images/54451401d52c0dd2fe9ee5752857d53c/tenor.gif";
+
+      await ctx.RespondAsync(embed: embed);
+    }
+
+    [Command("banned")]
+    public async Task Banned(CommandContext ctx) {
+      await ctx.TriggerTypingAsync();
+
+      DiscordEmbedBuilder embed;
+      embed = new DiscordEmbedBuilder();
+      embed.ImageUrl = "https://media1.tenor.com/images/66b9e27c779a1a314f0a8b31bb5609f7/tenor.gif";
+
+      await ctx.RespondAsync(embed: embed);
+    }
+  }
 }
