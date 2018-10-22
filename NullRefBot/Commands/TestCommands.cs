@@ -68,7 +68,7 @@ namespace NullRefBot.Commands
     }
 
     [Command("swanson")]
-    public async Task Ron(CommandContext ctx) {
+    public async Task Swanson(CommandContext ctx) {
       await ctx.TriggerTypingAsync();
 
       DiscordEmbedBuilder embed;
