@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
@@ -20,6 +21,7 @@ namespace NullRefBot.Utils
 				return;
 
 			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Continous Integration", ActivityType.Playing));
+			Bot.Instance.Client.DebugLogger.LogMessage(LogLevel.Info, "CI", "Updating bot", DateTime.Now);
 
 			// Update the bot
 			Process.Start("update.bat");
