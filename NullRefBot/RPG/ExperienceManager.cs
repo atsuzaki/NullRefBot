@@ -96,7 +96,7 @@ namespace NullRefBot.RPG {
 				try {
 					return await PostExpAsync( recipient, amount );
 				} catch( Exception e ) {
-					Console.WriteLine( e.ToString() );
+					//Console.WriteLine( e.ToString() );
 					return null;
 				}
 			} );
