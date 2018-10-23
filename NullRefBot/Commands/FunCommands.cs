@@ -7,7 +7,7 @@ using DSharpPlus.Entities;
 
 namespace NullRefBot.Commands
 {
-	public class FunCommands
+	public class FunCommands : BaseCommandModule
 	{
 		#region Swanson
 
