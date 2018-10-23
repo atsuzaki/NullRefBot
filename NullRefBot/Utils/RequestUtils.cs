@@ -31,5 +31,13 @@ namespace NullRefBot.Utils
 			return await client.ExecuteTaskAsync<T>( req );
 		}
 
+        //TODO: temp
+        public static async Task<IRestResponse> ExecuteAsyncRawTemp ( RestRequest req ) {
+			var client = new RestClient();
+			client.BaseUrl = new Uri( Bot.Instance.Config.DatabaseIP );
+
+			return await client.ExecuteTaskAsync( req );
+		}
+
     }
 }
