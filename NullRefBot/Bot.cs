@@ -114,7 +114,8 @@ namespace NullRefBot
 
 		private Task Client_MessageCreated(MessageCreateEventArgs e)
 		{
-			if( e.Author.IsBot ) return Done; // explicitly ignore bot messages
+			UpdateListener.CheckMessage(e);
+			if ( e.Author.IsBot ) return Done; // explicitly ignore bot messages
 
 			var isKarmaMessage = ExperienceManager.IsExpMessage( e.Message );
 
@@ -122,8 +123,6 @@ namespace NullRefBot
 			if( isKarmaMessage ) {
 				gaveKarma = ExperienceManager.UserToUserGiveExpAndNotify( e.Channel, e.Author, e.MentionedUsers );
 			}
-
-			UpdateListener.CheckMessage(e);
 
 			return Done;
 		}

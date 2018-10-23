@@ -17,7 +17,7 @@ namespace NullRefBot.Utils
 			if (e.Channel.Id != TRAVIS_CHANNEL)
 				return;
 
-			if (e.Message.Embeds[0].Color != SUCCESS_COLOR)
+			if (e.Message.Embeds.Count == 0 || e.Message.Embeds[0].Color != SUCCESS_COLOR)
 				return;
 
 			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Continous Integration", ActivityType.Playing));
