@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -24,6 +25,8 @@ namespace NullRefBot.Utils
 			if (e.Message.Embeds.Count == 0 || e.Message.Embeds[0].Color != SUCCESS_COLOR)
 			{
 				Console.WriteLine("Returning due to invalid embeds. Count = " + e.Message.Embeds.Count);
+				if (e.Message.Embeds.Count > 0)
+					Console.WriteLine("\tInvalid color: " + e.Message.Embeds[0].Color + " Required color: " + SUCCESS_COLOR);
 				return;
 			}
 
