@@ -108,7 +108,7 @@ namespace NullRefBot.RPG {
 					await channel.SendMessageAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $":sparkles: You gained {amount} experience!", author: recipient ) );
 					return await PostExpAsync( recipient, amount );
 				} catch( Exception e ) {
-					Console.WriteLine( e.ToString() );
+					//Console.WriteLine( e.ToString() );
 					return null;
 				}
 			} );
@@ -125,7 +125,7 @@ namespace NullRefBot.RPG {
 				try {
 					return await Task.WhenAll( tasks );
 				} catch( Exception e ) {
-					Console.WriteLine( e.ToString() );
+					//Console.WriteLine( e.ToString() );
 					return null;
 				}
 			} );
@@ -134,8 +134,6 @@ namespace NullRefBot.RPG {
 		public static bool UserToUserGiveExpAndNotify ( DiscordChannel channel, DiscordUser author, IEnumerable<DiscordUser> recipients, int amount = 1 ) {
 			var invalidUsers = new List<InvalidExpReciever>();
 			var validUsers = new List<DiscordUser>();
-
-			Console.WriteLine( author is DiscordUser );
 
 			messageBuilder.Length = 0;
 
@@ -166,7 +164,7 @@ namespace NullRefBot.RPG {
 					try {
 						retrievedUsers = await Task.WhenAll( tasks );
 					} catch( Exception e ) {
-						Console.WriteLine( e.ToString() );
+						//Console.WriteLine( e.ToString() );
 						success = false;
 					}
 				}
