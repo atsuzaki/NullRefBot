@@ -23,5 +23,8 @@ namespace NullRefBot
 
 		[JsonProperty("debug_channels")]
 		public ulong[] DebugChannels { get; private set; }
+
+		[JsonProperty("encryption_key")]
+		public string EncryptionKey { get; private set; }
 	}
 }

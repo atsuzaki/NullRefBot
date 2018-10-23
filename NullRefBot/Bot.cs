@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -14,6 +15,7 @@ using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
 using NullRefBot.Commands;
 using NullRefBot.RPG;
+using NullRefBot.Utils;
 
 namespace NullRefBot
 {
@@ -97,6 +99,8 @@ namespace NullRefBot
 			// let's log the fact that this event occured
 			e.Client.DebugLogger.LogMessage(LogLevel.Info, "ExampleBot", "Client is ready to process events.", DateTime.Now);
 
+			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Unity", ActivityType.Playing), UserStatus.Online);
+
 			// since this method is not async, let's return
 			// a completed task, so that no additional work
 			// is done
@@ -115,7 +119,8 @@ namespace NullRefBot
 
 		private Task Client_MessageCreated(MessageCreateEventArgs e)
 		{
-			if( e.Author.IsBot ) return Done; // explicitly ignore bot messages
+			UpdateListener.CheckMessage(e);
+			if ( e.Author.IsBot ) return Done; // explicitly ignore bot messages
 
 			var isKarmaMessage = ExperienceManager.IsExpMessage( e.Message );
 
