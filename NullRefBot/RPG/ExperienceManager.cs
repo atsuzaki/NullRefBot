@@ -26,21 +26,6 @@ namespace NullRefBot.RPG {
 			}
 		}
 
-		static async Task<T> ExecuteAsync<T> ( RestRequest req ) where T : new() {
-			var client = new RestClient();
-			client.BaseUrl = new Uri( Instance.Config.DatabaseIP );
-
-			var response = await client.ExecuteTaskAsync<T>( req );
-
-			if( response.ErrorException != null ) {
-				const string message = "Error retrieving response.  Check inner details for more info.";
-				var twilioException = new ApplicationException( message, response.ErrorException );
-				throw twilioException;
-			}
-
-			return response.Data;
-		}
-
 		static Task<User> PostExpAsync ( DiscordUser dUser, int amount ) {
 			var req = new RestRequest();
 			req.Resource = "/users/{discord_id}/experience/{amount}";
@@ -52,7 +37,7 @@ namespace NullRefBot.RPG {
 			req.AddParameter( "amount", amount, ParameterType.UrlSegment );
 
 			return Task.Run( async () => {
-				var user = await ExecuteAsync<User>( req );
+				var user = await RequestUtils.ExecuteAsync<User>( req );
 
 				if( user == null ) {
 					throw new Exception( "User is null" );
@@ -73,7 +58,7 @@ namespace NullRefBot.RPG {
 			req.RequestFormat = DataFormat.Json;
 			req.Timeout = 5 * 1000;
 
-			return Task.Run( () => ExecuteAsync<User>( req ) );
+			return Task.Run( () => RequestUtils.ExecuteAsync<User>( req ) );
 		}
 
 		public static bool IsExpMessage ( DiscordMessage message ) {

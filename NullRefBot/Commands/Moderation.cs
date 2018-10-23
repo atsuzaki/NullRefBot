@@ -22,7 +22,7 @@ namespace NullRefBot.Commands
 		    //int durationInMs = duration * 1000 * 60;
 		    int durationInMs = duration * 1000; //TODO: use above after finish debug
 
-		    Helpers.SetTimeout(() => {
+		    TimeoutUtils.SetTimeout(() => {
 		        PostMute(member.Id, -1);
 		        member.RevokeRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
 		    }, durationInMs);
