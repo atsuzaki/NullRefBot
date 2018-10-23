@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Encounters>
+  <Encounter id="test_encounter">
+    <Header>
+      <Title>A Test Encounter</Title>
+      <Author>The Narrator</Author>
+    </Header>
+    <Body>
+      <Description>
+        You seem to have stumbled into a test encounter. You're not entirely sure what that means, but you do know that you seem to be in an entirely white room with no doors or windows.
+
+        It's well lit, but you're not sure from where. The only other objects in the room are three ornate pedastals, each topped with a large cartoony button.
+
+        * The left button is **black**
+        * The middle button is **white**
+        * And the right button is **red**.
+
+        You get the feeling that your only options involve pressing one of the buttons. Which button do you choose?
+      </Description>
+    </Body>
+    
+    <Options print="false" display="explicit">
+      <Option>
+        <Display>black_circle</Display>
+        <Description>Press the black button</Description>
+        <Action>
+          <Go id="test_encounter:black"/>
+        </Action>
+      </Option>
+      
+      <Option>
+        <Display>white_circle</Display>
+        <Description>Press the white button</Description>
+        <Action>
+          <Go id="test_encounter:white"/>
+        </Action>
+      </Option>
+      
+      <Option>
+        <Display>red_circle</Display>
+        <Description>Press the red button</Description>
+        <Action>
+          <Go id="test_encounter:red"/>
+        </Action>
+      </Option>
+    </Options>
+    
+    <SubEncounters>
+      
+      <Encounter id="black">
+        <Body>
+          <Description>
+            You push the **black** button, and with a loud crack are suddenly and violently teleported out of the test encounter entirely. How anticlimatic.
+          </Description>
+        </Body>
+      </Encounter>
+      
+      <Encounter id="white">
+        <Header>
+          <Title>Suddenly and Without Warning</Title>
+          <Author>The Narrator</Author>
+        </Header>
+        
+        <Body>
+          <Description>
+            As soon as you push the **white** button, the floor silently opens up beneath you! You fall in a rather silly manner, your arms and legs flailing comically.
+
+            After falling for what seems a bit longer than necessary, you land sprawling on a giant stack of pillows. After taking a moment to make sure you're still in one piece, you pick yourself up and dust yourself off, no worse for wear besides your tarnished dignity.
+
+            Your new surroundings are what appears to be a tall concrete room. You can see the chute you fell out of above you, and a single door on the wall.
+
+            There's more than one doorframe, mind you, but all the others have nothing but concrete behind them. You have the feeling that the other doors were cut for budgetary reasons. You steel yourself and step through the available door.
+          </Description>
+        </Body>
+
+        <Options display="next">
+          <Option>
+            <Description>Next</Description>
+            <Action>
+              <Go id="test_encounter:white:finish"/>
+            </Action>
+          </Option>
+        </Options>
+
+        <SubEncounters>
+          <Encounter id="finish">
+            <Header>
+              <Title>Hmm...</Title>
+              <Author>The Narrator</Author>
+            </Header>
+
+            <Body>
+              <Description>
+                You find yourself blinking in sudden harsh sunlight. It seems this door led to the exit of the test encounter. You have a feeling that the rest of the encounter was cut for budgetary reasons. 'Bloody beauracrats,' you mutter to yourself.
+              </Description>
+            </Body>
+          </Encounter>
+        </SubEncounters>
+      </Encounter>
+
+      <Encounter id="red">
+        <Header>
+          <Title>Leveling up!</Title>
+          <Author>The Narrator</Author>
+        </Header>
+
+        <Body>
+          <Description>
+            As soon as you push the **red** button, a warm sensation wells up inside you. You can feel yourself getting more powerful! A reddish mist faintly wafts off your skin. 
+            
+            After a moment, both the mist and sensation dissipate, but you still feel stronger.
+          </Description>
+        </Body>
+
+        <LootAction>
+          <Loot>
+            <Experience>2</Experience>
+          </Loot>
+        </LootAction>
+      </Encounter>
+  
+    </SubEncounters>
+  </Encounter>
+
+
+  <Encounter id="second_test" exit="true">
+    <Header>
+      <Title>A Second Test Encounter</Title>
+      <Author>The Narrator</Author>
+    </Header>
+    <Body>
+      <Description>
+        Oh dear. You're back in the test encounter again.
+        
+        This time, it seems like instead of three buttons, there's ... nothing at all. Wow, this really sucks.
+        
+        After a short period of twiddling your thumbs, you're back outside again. You want your money back.
+      </Description>
+    </Body>
+  </Encounter>
+</Encounters>

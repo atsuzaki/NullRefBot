@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Exceptions;
@@ -33,6 +34,7 @@ namespace NullRefBot
 
 		public async Task RunAsync()
 		{
+
 			string jsonString = "";
 			using (var fs = File.OpenRead("config.json"))
 			using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
@@ -84,6 +86,8 @@ namespace NullRefBot
 			// this.Commands.SetHelpFormatter<HelpFormatter>();
 
 			await Client.ConnectAsync();
+
+			EncounterImporter.ImportFromXML( "testencounter.xml" );
 
 			await Task.Delay(-1);
 		}

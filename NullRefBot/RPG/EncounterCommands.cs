@@ -5,20 +5,34 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using static NullRefBot.Bot;
 using System.Timers;
+using System.Xml.Serialization;
+using System.IO;
+using System.Text;
+using System;
 
 namespace NullRefBot.RPG {
+
 	public class EncounterCommands : BaseCommandModule {
 
 		[Command( "encounter" )]
 		public async Task BeginEncounter ( CommandContext c ) {
 			await c.TriggerTypingAsync();
 
-			var encounter = EncounterManager.TrySpawnEncounterForUser( c.Member );
+			string encounterId;
+			var canSpawn = EncounterManager.TrySpawnEncounterForUser( c.Member, out encounterId );
 
-			if( encounter != null ) {
-				await EncounterManager.SpawnEncounter( c.Channel, c.User, encounter );
+			if( !canSpawn ) {
+				if( encounterId != null ) {
+					await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $"You're already in the encounter **{EncounterManager.GetEncounter( encounterId ).title}**! Get back there!", author: c.Member ) );
+				} else {
+					await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $"You searched but nothing interesting seems to be happening at the moment...", author: c.Member ) );
+				}
 			} else {
-				await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $"**{c.Member.DisplayName}** searched but nothing interesting seems to be happening at the moment..." ) );
+				if( encounterId != null ) {
+					await EncounterManager.SpawnEncounter( c.Channel, c.User, encounterId );
+				} else {
+					await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $"You searched but nothing interesting seems to be happening at the moment...", author: c.Member ) );
+				}
 			}
 		}
 

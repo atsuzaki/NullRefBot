@@ -4,22 +4,24 @@ using static NullRefBot.Bot;
 namespace NullRefBot.RPG {
 	public class EncounterOption {
 		public string description;
-		public DiscordEmoji emojiOverride;
+		public DiscordEmoji displayIcon;
 
-		public EncounterResult result;
+		public EncounterAction action;
 
-		public EncounterOption ( string description, EncounterResult result, string emojiOverrideName = null ) {
+		public EncounterOption () { }
+
+		public EncounterOption ( string description, EncounterAction action, string emojiOverrideName = null ) {
 			this.description = description;
-			this.result = result;
+			this.action = action;
 			if( emojiOverrideName != null ) {
-				emojiOverride = DiscordEmoji.FromName( Instance.Client, emojiOverrideName );
+				displayIcon = DiscordEmoji.FromName( Instance.Client, emojiOverrideName );
 			}
 		}
 
-		public EncounterOption ( string description, EncounterResult result, DiscordEmoji emojiOverride ) {
+		public EncounterOption ( string description, EncounterAction action, DiscordEmoji emojiOverride ) {
 			this.description = description;
-			this.result = result;
-			this.emojiOverride = emojiOverride;
+			this.action = action;
+			this.displayIcon = emojiOverride;
 		}
 	}
 }

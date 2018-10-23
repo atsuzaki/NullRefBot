@@ -102,6 +102,18 @@ namespace NullRefBot.RPG {
 			} );
 		}
 
+		public static Task<User> GiveExpAndNotifyAsync ( DiscordChannel channel, DiscordUser recipient, int amount ) {
+			return Task.Run<User>( async () => {
+				try {
+					await channel.SendMessageAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $":sparkles: You gained {amount} experience!", author: recipient ) );
+					return await PostExpAsync( recipient, amount );
+				} catch( Exception e ) {
+					Console.WriteLine( e.ToString() );
+					return null;
+				}
+			} );
+		}
+
 		public static Task<User[]> GiveExpAsync ( DiscordChannel channel, IList<DiscordUser> recipients, IList<int> amounts ) {
 			return Task.Run<User[]>( async () => {
 				var tasks = new Task<User>[ recipients.Count ];
