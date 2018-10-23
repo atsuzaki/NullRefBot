@@ -13,6 +13,7 @@ using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
 using NullRefBot.Commands;
 using NullRefBot.RPG;
+using NullRefBot.Utils;
 
 namespace NullRefBot
 {
@@ -119,6 +120,8 @@ namespace NullRefBot
 			if( isKarmaMessage ) {
 				gaveKarma = ExperienceManager.UserToUserGiveExpAndNotify( e.Channel, e.Author, e.MentionedUsers );
 			}
+
+			UpdateListener.CheckMessage(e);
 
 			return Done;
 		}
