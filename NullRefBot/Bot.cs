@@ -95,7 +95,7 @@ namespace NullRefBot
 			// let's log the fact that this event occured
 			e.Client.DebugLogger.LogMessage(LogLevel.Info, "ExampleBot", "Client is ready to process events.", DateTime.Now);
 
-			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Unity", ActivityType.Playing));
+			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Unity", ActivityType.Playing), UserStatus.Online);
 
 			// since this method is not async, let's return
 			// a completed task, so that no additional work

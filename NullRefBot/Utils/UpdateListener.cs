@@ -21,7 +21,7 @@ namespace NullRefBot.Utils
 			if (e.Message.Embeds.Count == 0 || !e.Message.Embeds[0].Author.Name.ToLower().Contains("passed"))
 				return;
 
-			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Continous Integration", ActivityType.Playing));
+			Bot.Instance.Client.UpdateStatusAsync(new DiscordActivity("with Continous Integration", ActivityType.Playing), UserStatus.DoNotDisturb);
 			Bot.Instance.Client.DebugLogger.LogMessage(LogLevel.Info, "CI", "Updating bot", DateTime.Now);
 
 			// Update the bot
