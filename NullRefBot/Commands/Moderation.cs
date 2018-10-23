@@ -18,15 +18,18 @@ namespace NullRefBot.Commands
 		    const ulong MUTED_ROLE_ID = 503356983353802752; //TEMP
 
 			await ctx.TriggerTypingAsync();
-			await ctx.RespondAsync($"**{member.DisplayName}** is muted for {duration} minutes");
 
-		    int durationInMs = duration * 1000 * 60;
+		    //int durationInMs = duration * 1000 * 60;
+		    int durationInMs = duration * 1000; //TODO: use above after finish debug
+
 		    Helpers.SetTimeout(() => {
 		        PostMute(member.Id, -1);
 		        member.RevokeRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
 		    }, durationInMs);
 
             await member.GrantRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
+
+			await ctx.RespondAsync($"**{member.DisplayName}** is muted for {duration} minutes");
 
 		    //check db later
 		}
@@ -50,12 +53,14 @@ namespace NullRefBot.Commands
 
 	    private void PostMute(ulong discordID, int durationInSeconds) {
             var req = new RestRequest();
-            req.Resource = "/mute/{discord_id}?mute_time={amount}"; //TODO: temp
+            req.Resource = "/mutes/{discord_id}/muteFor/{amount}";
             req.AddParameter("discord_id", discordID);
             req.AddParameter("amount", durationInSeconds);
 
             req.Method = Method.PUT;
+	        req.Timeout = 5 * 1000;
             req.RequestFormat = DataFormat.Json;
-        }
+	        Console.WriteLine(req.ToString());
+	    }
 	}
 }
