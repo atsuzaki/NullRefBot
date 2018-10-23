@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -10,57 +11,112 @@ using RestSharp;
 
 namespace NullRefBot.Commands
 {
-	public class Moderation : BaseCommandModule
+    [RequirePermissions(Permissions.ManageRoles)]
+    public class Moderation : BaseCommandModule
 	{
-        //TODO: figure out how to restrict to admin/mods/owner only
+        const ulong MUTED_ROLE_ID = 503356983353802752; //TODO: TEMP
+
+        [Command("testgetmute")]
+		public async Task TestGetMute(CommandContext ctx, DiscordMember member) {
+			await ctx.TriggerTypingAsync();
+
+		    try {
+		        var res = await GetMute(member.Id);
+		        Console.WriteLine(res == null);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
 		[Command("mute")]
 		public async Task Mute(CommandContext ctx, DiscordMember member, int duration = 5) {
-		    const ulong MUTED_ROLE_ID = 503356983353802752; //TEMP
-
 			await ctx.TriggerTypingAsync();
 
-		    //int durationInMs = duration * 1000 * 60;
-		    int durationInMs = duration * 1000; //TODO: use above after finish debug
+		    int durationInSeconds = duration * 60;
+		    int durationInMs = duration * 1000 * 60;
 
-		    TimeoutUtils.SetTimeout(() => {
-		        PostMute(member.Id, -1);
-		        member.RevokeRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
-		    }, durationInMs);
+		    try {
+		        await PutMute(member.Id, durationInSeconds);
+                await member.GrantRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
+                await ctx.RespondAsync($"**{member.DisplayName}** is muted for {duration} minutes");
 
-            await member.GrantRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
+                TimeoutUtils.SetTimeout(() => TryUnmuteAsync(member), durationInMs);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.ToString());
+                await ctx.RespondAsync($"Error: {e.Message}");
+            }
+        }
 
-			await ctx.RespondAsync($"**{member.DisplayName}** is muted for {duration} minutes");
-
-		    //check db later
-		}
-
-		[Command("unmute")]
+        [Command("unmute")]
 		public async Task Unmute(CommandContext ctx, DiscordMember member) {
-		    const ulong MUTED_ROLE_ID = 503356983353802752; //TEMP
-
 			await ctx.TriggerTypingAsync();
-			await ctx.RespondAsync($"**{member.DisplayName}** is unmuted");
 
-		    PostMute(member.Id, -1);
-		    await member.RevokeRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
+            try {
+                await PutMute(member.Id, -1);
+                await member.RevokeRoleAsync(ctx.Guild.GetRole(MUTED_ROLE_ID));
+                await ctx.RespondAsync($"**{member.DisplayName}** is unmuted");
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.ToString());
+                await ctx.RespondAsync($"Error: {e.Message}");
+            }
 		}
 
 	    private async Task<bool> TryUnmuteAsync(DiscordMember member) {
-            //ask permission to unmute 
-            PostMute(member.Id, -1);
-	        return true;
+	        Console.WriteLine("trying to unmute");
+
+	        var mute = await GetMute(member.Id);
+
+	        if (mute == null) {
+		        await member.RevokeRoleAsync(member.Guild.GetRole(MUTED_ROLE_ID));
+	            return true;
+	        }
+	        if (mute.mutedUntil < DateTime.Now) { //TODO: how?
+                await PutMute(member.Id, -1);
+		        await member.RevokeRoleAsync(member.Guild.GetRole(MUTED_ROLE_ID));
+                return true;
+            }
+	        return false;
 	    }
 
-	    private void PostMute(ulong discordID, int durationInSeconds) {
+        private Task<Mute> GetMute(ulong discordID) { 
             var req = new RestRequest();
+
+            req.Resource = "/mutes/muted/{discord_id}";
+            req.AddParameter("discord_id", discordID, ParameterType.UrlSegment);
+
+            req.Method = Method.GET;
+	        req.Timeout = 30 * 1000;
+            req.RequestFormat = DataFormat.Json;
+            
+            return Task.Run(async () => {
+                var res = await RequestUtils.ExecuteAsyncRaw<Mute>(req);
+                Console.WriteLine(res.Data);
+                return res.Data;
+            });
+	    }
+
+	    private Task PutMute(ulong discordID, int durationInSeconds) {
+            var req = new RestRequest();
+
             req.Resource = "/mutes/{discord_id}/muteFor/{amount}";
-            req.AddParameter("discord_id", discordID);
-            req.AddParameter("amount", durationInSeconds);
+            req.AddParameter("discord_id", discordID, ParameterType.UrlSegment);
+            req.AddParameter("amount", durationInSeconds, ParameterType.UrlSegment);
 
             req.Method = Method.PUT;
-	        req.Timeout = 5 * 1000;
+	        req.Timeout = 30 * 1000;
             req.RequestFormat = DataFormat.Json;
-	        Console.WriteLine(req.ToString());
+
+            return Task.Run( async () => {
+                var res = await RequestUtils.ExecuteAsyncRaw<Mute>( req );
+
+                Console.WriteLine(res.StatusCode);
+                if (res.StatusCode != HttpStatusCode.OK) {
+                    throw new Exception("Server returns" + res.StatusCode);
+                }
+            });
 	    }
 	}
 }

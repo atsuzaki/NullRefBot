@@ -22,5 +22,14 @@ namespace NullRefBot.Utils
 
 			return response.Data;
 		}
+
+        //Returns the whole response instead of just the data. Better naming?
+		public static async Task<IRestResponse<T>> ExecuteAsyncRaw<T> ( RestRequest req ) where T : new() {
+			var client = new RestClient();
+			client.BaseUrl = new Uri( Bot.Instance.Config.DatabaseIP );
+
+			return await client.ExecuteTaskAsync<T>( req );
+		}
+
     }
 }
