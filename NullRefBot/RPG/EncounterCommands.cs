@@ -24,7 +24,7 @@ namespace NullRefBot.RPG {
 
 		[Command( "testlootduel" )]
 		public async Task CreateTestLootDuel ( CommandContext c ) {
-			var message = await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( ":moneybag: Grab the Loot!", "First to grab the loot gets it! Beware of the decoys, you only get one shot!" ) );
+			var message = await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( ":moneybag: Grab the Loot: Duel Mode!", "First to grab the :moneybag: gets it! Beware of the decoys, you only get one shot!" ) );
 
 			var userBlacklist = new HashSet<DiscordUser>();
 
@@ -38,16 +38,16 @@ namespace NullRefBot.RPG {
 					Instance.RemoveReactionTrigger( message );
 					Task.Run( async () => {
 						timer.Stop();
-						//await message.DeleteAllReactionsAsync();
+						await message.DeleteAllReactionsAsync();
 						//await message.ModifyAsync( embed: DiscordEmbedUtils.MakeTextEmbed( text: $"**{user.Username}** got the loot!" ) );
-						var task = message.DeleteAsync();
-						await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $":moneybag: **{user.Username}** got the loot!", author: user ) );
+						//var task = message.DeleteAsync();
+						await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $":moneybag: Got the loot!", author: user ) );
 					} );
 				} else if( userBlacklist.Add( user ) ) {
 					Task.Run( async () => {
 						//await message.ModifyAsync( embed: DiscordEmbedUtils.MakeTextEmbed( text: $"**{user.Username}** got the loot!" ) );
 						//var task = message.DeleteAsync();
-						await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $":skull_crossbones: missed the loot!", author: user ) );
+						await c.RespondAsync( embed: DiscordEmbedUtils.MakeEmbed( text: $":skull_crossbones: Missed the loot!", author: user ) );
 					} );
 				}
 			};
@@ -61,8 +61,10 @@ namespace NullRefBot.RPG {
 
 			int currentIcon = 0;
 			timer.Elapsed += ( sender, e ) => {
-				if( currentIcon < numIcons ) {
-					message.CreateReactionAsync( lootIcons[ currentIcon ] );
+				if( currentIcon <= numIcons ) {
+					if( currentIcon < numIcons ) {
+						message.CreateReactionAsync( lootIcons[ currentIcon ] );
+					}
 					currentIcon++;
 				} else {
 					timer.Stop();

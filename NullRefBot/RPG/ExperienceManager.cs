@@ -43,16 +43,13 @@ namespace NullRefBot.RPG {
 
 		static Task<User> PostExpAsync ( DiscordUser dUser, int amount ) {
 			var req = new RestRequest();
-			req.Resource = "/users/{discord_id}/addexperience";
+			req.Resource = "/users/{discord_id}/experience/{amount}";
 			req.RequestFormat = DataFormat.Json;
 			req.Method = Method.PATCH;
 			req.Timeout = 5 * 1000;
 
 			req.AddParameter( "discord_id", dUser.Id, ParameterType.UrlSegment );
-
-			req.AddBody( new { experience = amount } );
-
-			Console.WriteLine( req.ToString() );
+			req.AddParameter( "amount", amount, ParameterType.UrlSegment );
 
 			return Task.Run( async () => {
 				var user = await ExecuteAsync<User>( req );
