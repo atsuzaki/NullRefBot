@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 namespace NullRefBot.Commands
 {
     [RequirePermissions(Permissions.ManageRoles)]
-    public class Moderation : BaseCommandModule
+    public class MuteCommands : BaseCommandModule
 	{
         const ulong MUTED_ROLE_ID = 503356983353802752; //TODO: TEMP
 
