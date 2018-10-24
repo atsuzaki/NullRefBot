@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using NullRefBot.RPG;
 
 namespace NullRefBot.Commands
 {
@@ -71,6 +72,22 @@ namespace NullRefBot.Commands
 			DiscordEmbed embed = new DiscordEmbedBuilder
 			{
 				ImageUrl = "https://media1.tenor.com/images/66b9e27c779a1a314f0a8b31bb5609f7/tenor.gif"
+			};
+
+			await ctx.RespondAsync(embed: embed);
+		}
+
+		[Command("placekitten")]
+		public async Task PlaceKitten(CommandContext ctx)
+		{
+			await ctx.TriggerTypingAsync();
+
+			var x = RandomUtils.Range( 200, 400 );
+			var y = RandomUtils.Range( 200, 400 );
+
+			DiscordEmbed embed = new DiscordEmbedBuilder
+			{
+				ImageUrl = $"https://placekitten.com/{x}/{y}"
 			};
 
 			await ctx.RespondAsync(embed: embed);
